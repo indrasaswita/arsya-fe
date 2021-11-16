@@ -1,0 +1,14 @@
+
+.dashboard-wrapper {
+	.filter-wrapper {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		> * {
+			flex: 1;
+			&:not(:first-child) {
+				margin-left: 10px;
+			}
+		}
+	}
+}
