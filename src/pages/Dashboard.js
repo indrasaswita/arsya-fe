@@ -24,7 +24,12 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  TableHead,
+  Paper,
+  AccordionDetails,
+  AccordionSummary,
+  Accordion
 } from '@mui/material';
 // components
 import Page from '../components/Page';
@@ -220,12 +225,169 @@ const Dashboard = () => {
         </Grid>
       </Container>
       <br /> <br />
-      Aduan Per-Pengelola <br />
-      Aduan P1: 2000 <br />
-      Aduan P2: 1000 <br />
-      Aduan P3: 4000 <br />
-      Aduan P4: xxxx <br />
-      .... See More <br />
+      <div className="aduan-perlembaga-wrapper">
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<span>V</span>}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography>Aduan Per-Lembaga</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              <div className="card-row">
+                <div
+                  className="card-wrapper"
+                  style={{
+                    backgroundColor: '#ff0000'
+                  }}
+                >
+                  <div className="icon">
+                    <div
+                      className="image"
+                      style={{
+                        backgroundImage:
+                          'url(https://img.lovepik.com/element/45004/4393.png_300.png)'
+                      }}
+                    />
+                  </div>
+                  <div className="text">
+                    <div className="title">Seluruh Aduan</div>
+                    <div className="total">1000</div>
+                  </div>
+                </div>
+              </div>
+              <div className="card-row">
+                <div
+                  className="card-wrapper"
+                  style={{
+                    backgroundColor: '#ff4400'
+                  }}
+                >
+                  <div className="icon">
+                    <div
+                      className="image"
+                      style={{
+                        backgroundImage:
+                          'url(https://img.lovepik.com/element/45004/4393.png_300.png)'
+                      }}
+                    />
+                  </div>
+                  <div className="text">
+                    <div className="title">Aduan Baru</div>
+                    <div className="total">1000</div>
+                  </div>
+                </div>
+                <div
+                  className="card-wrapper"
+                  style={{
+                    backgroundColor: '#ffaa00'
+                  }}
+                >
+                  <div className="icon">
+                    <div
+                      className="image"
+                      style={{
+                        backgroundImage:
+                          'url(https://img.lovepik.com/element/45004/4393.png_300.png)'
+                      }}
+                    />
+                  </div>
+                  <div className="text">
+                    <div className="title">Assigned</div>
+                    <div className="total">1000</div>
+                  </div>
+                </div>
+              </div>
+              <div className="card-row">
+                <div
+                  className="card-wrapper"
+                  style={{
+                    backgroundColor: '#aaff00'
+                  }}
+                >
+                  <div className="icon">
+                    <div
+                      className="image"
+                      style={{
+                        backgroundImage:
+                          'url(https://img.lovepik.com/element/45004/4393.png_300.png)'
+                      }}
+                    />
+                  </div>
+                  <div className="text">
+                    <div className="title">Diterima</div>
+                    <div className="total">1000</div>
+                  </div>
+                </div>
+                <div
+                  className="card-wrapper"
+                  style={{
+                    backgroundColor: '#00ff44'
+                  }}
+                >
+                  <div className="icon">
+                    <div
+                      className="image"
+                      style={{
+                        backgroundImage:
+                          'url(https://img.lovepik.com/element/45004/4393.png_300.png)'
+                      }}
+                    />
+                  </div>
+                  <div className="text">
+                    <div className="title">Diproses</div>
+                    <div className="total">1000</div>
+                  </div>
+                </div>
+              </div>
+              <div className="card-row">
+                <div
+                  className="card-wrapper"
+                  style={{
+                    backgroundColor: '#00aaaa'
+                  }}
+                >
+                  <div className="icon">
+                    <div
+                      className="image"
+                      style={{
+                        backgroundImage:
+                          'url(https://img.lovepik.com/element/45004/4393.png_300.png)'
+                      }}
+                    />
+                  </div>
+                  <div className="text">
+                    <div className="title">Selesai</div>
+                    <div className="total">1000</div>
+                  </div>
+                </div>
+                <div
+                  className="card-wrapper"
+                  style={{
+                    backgroundColor: '#0044aa'
+                  }}
+                >
+                  <div className="icon">
+                    <div
+                      className="image"
+                      style={{
+                        backgroundImage:
+                          'url(https://img.lovepik.com/element/45004/4393.png_300.png)'
+                      }}
+                    />
+                  </div>
+                  <div className="text">
+                    <div className="title">Eskalasi</div>
+                    <div className="total">1000</div>
+                  </div>
+                </div>
+              </div>
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+      </div>
       <br /> <br />
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>

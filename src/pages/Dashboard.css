@@ -1,11 +1,93 @@
+@media screen and (max-width: 450px) {
+  .dashboard-wrapper .filter-wrapper {
+    flex-direction: column;
+  }
+  .dashboard-wrapper .filter-wrapper > * {
+    flex: 1;
+  }
+  .dashboard-wrapper .filter-wrapper > *:not(:first-child) {
+    margin-top: 10px;
+  }
+  .dashboard-wrapper .filter-wrapper button {
+    width: 100%;
+  }
+}
+@media screen and (min-width: 451px) {
+  .dashboard-wrapper .filter-wrapper {
+    flex-direction: row;
+  }
+  .dashboard-wrapper .filter-wrapper > * {
+    flex: 1;
+  }
+  .dashboard-wrapper .filter-wrapper > *:not(:first-child) {
+    margin-left: 10px;
+  }
+}
 .dashboard-wrapper .filter-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 0 24px;
 }
-.dashboard-wrapper .filter-wrapper > * {
+.dashboard-wrapper .filter-wrapper [class*=FormControl] {
+  min-width: 120px;
+}
+.dashboard-wrapper .filter-wrapper button {
+  padding: 15px 6px;
+}
+.dashboard-wrapper .aduan-perlembaga-wrapper {
+  padding: 0 24px;
+}
+.dashboard-wrapper .aduan-perlembaga-wrapper > [class*=Accordion] {
+  border-width: 1px;
+  border-style: solid;
+  border-color: #999;
+  background-color: #f4f4f4;
+  border-radius: 8px;
+}
+.dashboard-wrapper .aduan-perlembaga-wrapper .card-row {
+  display: flex;
+  justify-content: center;
+}
+.dashboard-wrapper .aduan-perlembaga-wrapper .card-row .card-wrapper {
+  width: 50%;
+  padding: 8px 16px;
+  margin: 16px;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  box-shadow: inset 0 -10px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.dashboard-wrapper .aduan-perlembaga-wrapper .card-row .card-wrapper .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dashboard-wrapper .aduan-perlembaga-wrapper .card-row .card-wrapper .icon .image {
+  content: " ";
+  width: 35px;
+  height: 35px;
+  background-color: white;
+  margin-right: 8px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.dashboard-wrapper .aduan-perlembaga-wrapper .card-row .card-wrapper .text {
   flex: 1;
+  display: block;
+  text-align: left;
 }
-.dashboard-wrapper .filter-wrapper > *:not(:first-child) {
-  margin-left: 10px;
+.dashboard-wrapper .aduan-perlembaga-wrapper .card-row .card-wrapper .text .title {
+  font-size: 95%;
+}
+.dashboard-wrapper .aduan-perlembaga-wrapper .card-row .card-wrapper .text .total {
+  font-size: 160%;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 3px;
 }
