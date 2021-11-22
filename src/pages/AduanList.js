@@ -1,16 +1,12 @@
+import React, { useState } from 'react';
 import { filter } from 'lodash';
-import { Icon } from '@iconify/react';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
-import plusFill from '@iconify/icons-eva/plus-fill';
-import { Link as RouterLink } from 'react-router-dom';
 // material
 import {
   Card,
   Table,
   Stack,
   Avatar,
-  Button,
   Checkbox,
   TableRow,
   TableBody,
@@ -21,23 +17,25 @@ import {
   TablePagination
 } from '@mui/material';
 // components
-import Page from '../components/Page';
+import FilterDashboard from '../components/FilterDashboard';
 import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
-import { RoleListHead, RoleListToolbar, RoleMoreMenu } from '../components/_dashboard/role/index';
-//
-import ROLELIST from '../_mocks_/role';
-
-// ----------------------------------------------------------------------
+import {
+  AduanListHead,
+  AduanListToolbar,
+  AduanMoreMenu
+} from '../components/_dashboard/aduan/index';
+import USERLIST from '../_mocks_/user';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
+  { id: 'company', label: 'Company', alignRight: false },
+  { id: 'role', label: 'Role', alignRight: false },
+  { id: 'isVerified', label: 'Verified', alignRight: false },
   { id: 'status', label: 'Status', alignRight: false },
   { id: '' }
 ];
-
-// ----------------------------------------------------------------------
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -68,7 +66,7 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-const Roles = () => {
+const AduanList = () => {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -84,7 +82,7 @@ const Roles = () => {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = ROLELIST.map((n) => n.name);
+      const newSelecteds = USERLIST.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -122,31 +120,24 @@ const Roles = () => {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - ROLELIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
-  const filteredRoles = applySortFilter(ROLELIST, getComparator(order, orderBy), filterName);
+  const filteredAduans = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
 
-  const isRoleNotFound = filteredRoles.length === 0;
+  const isAduanNotFound = filteredAduans.length === 0;
 
   return (
-    <Page title="Role | Minimal-UI">
+    <div className="aduanlist-wrapper">
+      <FilterDashboard />
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Roles
+            Aduan
           </Typography>
-          <Button
-            variant="contained"
-            component={RouterLink}
-            to="#"
-            startIcon={<Icon icon={plusFill} />}
-          >
-            New Role
-          </Button>
         </Stack>
 
         <Card>
-          <RoleListToolbar
+          <AduanListToolbar
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
@@ -155,20 +146,20 @@ const Roles = () => {
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <RoleListHead
+                <AduanListHead
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={ROLELIST.length}
+                  rowCount={USERLIST.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredRoles
+                  {filteredAduans
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { id, name, status, avatarUrl } = row;
+                      const { id, name, role, status, company, avatarUrl, isVerified } = row;
                       const isItemSelected = selected.indexOf(name) !== -1;
 
                       return (
@@ -194,6 +185,9 @@ const Roles = () => {
                               </Typography>
                             </Stack>
                           </TableCell>
+                          <TableCell align="left">{company}</TableCell>
+                          <TableCell align="left">{role}</TableCell>
+                          <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
                           <TableCell align="left">
                             <Label
                               variant="ghost"
@@ -204,7 +198,7 @@ const Roles = () => {
                           </TableCell>
 
                           <TableCell align="right">
-                            <RoleMoreMenu />
+                            <AduanMoreMenu />
                           </TableCell>
                         </TableRow>
                       );
@@ -215,7 +209,7 @@ const Roles = () => {
                     </TableRow>
                   )}
                 </TableBody>
-                {isRoleNotFound && (
+                {isAduanNotFound && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -231,7 +225,7 @@ const Roles = () => {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={ROLELIST.length}
+            count={USERLIST.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -239,8 +233,8 @@ const Roles = () => {
           />
         </Card>
       </Container>
-    </Page>
+    </div>
   );
 };
 
-export default Roles;
+export default AduanList;
