@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+/* eslint-disable camelcase */
+import React, { useEffect, useState } from 'react';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-// material
 import {
   Card,
   Table,
@@ -16,6 +16,9 @@ import {
   TableContainer,
   TablePagination
 } from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
+import { getAllAduan } from '../actions/aduan';
 // components
 import FilterDashboard from '../components/FilterDashboard';
 import Label from '../components/Label';
@@ -26,14 +29,14 @@ import {
   AduanListToolbar,
   AduanMoreMenu
 } from '../components/_dashboard/aduan/index';
-import USERLIST from '../_mocks_/user';
+import './AduanList.css';
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name', alignRight: false },
-  { id: 'company', label: 'Company', alignRight: false },
-  { id: 'role', label: 'Role', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
+  { id: 'user_email', label: 'Pelapor', alignRight: false },
+  { id: 'lembaga_id', label: 'Lembaga', alignRight: false },
+  { id: 'role_id', label: 'Role', alignRight: false },
   { id: 'status', label: 'Status', alignRight: false },
+  { id: 'body', label: 'Detail', alignRight: false },
   { id: '' }
 ];
 
@@ -67,12 +70,56 @@ function applySortFilter(array, comparator, query) {
 }
 
 const AduanList = () => {
+  const [aduanItems, setAduanItems] = useState([]);
+  const [totalRow, setTotalRow] = useState(0);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [source, setSource] = useState(null);
+
+  const longDateOption = {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  };
+
+  const fetchAduanList = (currFilterName = null, currPage = -1, currRowsPerPage = 0) => {
+    if (currPage === -1) {
+      currPage = page;
+    }
+    if (currRowsPerPage === 0) {
+      currRowsPerPage = rowsPerPage;
+    }
+    if (currFilterName === null) {
+      currFilterName = filterName;
+    }
+
+    if (source) {
+      source.cancel();
+    }
+
+    getAllAduan(currFilterName, currPage + 1, currRowsPerPage, (value) => {
+      setSource(value);
+    })
+      .then((response) => {
+        setAduanItems(response.data.aduan);
+        setTotalRow(response.data.total);
+
+        setSource(null);
+      })
+      .catch((reason) => {
+        console.error(reason);
+      });
+  };
+
+  useEffect(() => {
+    // constructor
+    fetchAduanList();
+  }, []);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -82,7 +129,7 @@ const AduanList = () => {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
+      const newSelecteds = aduanItems.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -109,22 +156,27 @@ const AduanList = () => {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
+    fetchAduanList(filterName, newPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    const newRowPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowPerPage);
     setPage(0);
+    fetchAduanList(filterName, 0, newRowPerPage);
   };
 
   const handleFilterByName = (event) => {
-    setFilterName(event.target.value);
+    const newFilterName = event.target.value;
+    setFilterName(newFilterName);
+    fetchAduanList(newFilterName, 0, rowsPerPage);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  // const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - aduanItems.length) : 0;
 
-  const filteredAduans = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+  // const filteredAduans = applySortFilter(aduanItems, getComparator(order, orderBy), filterName);
 
-  const isAduanNotFound = filteredAduans.length === 0;
+  // const isAduanNotFound = filteredAduans.length === 0;
 
   return (
     <div className="aduanlist-wrapper">
@@ -150,17 +202,28 @@ const AduanList = () => {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
+                  rowCount={aduanItems.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredAduans
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  {aduanItems
+                    // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { id, name, role, status, company, avatarUrl, isVerified } = row;
-                      const isItemSelected = selected.indexOf(name) !== -1;
+                      const {
+                        id,
+                        user_email,
+                        kategori,
+                        aduan_kategori_id,
+                        status,
+                        role_nama,
+                        isian,
+                        jawaban,
+                        waktu,
+                        lembaga_nama
+                      } = row;
+                      const isItemSelected = selected.indexOf(user_email) !== -1;
 
                       return (
                         <TableRow
@@ -174,27 +237,29 @@ const AduanList = () => {
                           <TableCell padding="checkbox">
                             <Checkbox
                               checked={isItemSelected}
-                              onChange={(event) => handleClick(event, name)}
+                              onChange={(event) => handleClick(event, user_email)}
                             />
                           </TableCell>
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
-                              <Avatar alt={name} src={avatarUrl} />
+                              <span
+                                className={`aduan-category ${aduan_kategori_id === 1 ? 's' : 'k'}`}
+                              />
                               <Typography variant="subtitle2" noWrap>
-                                {name}
+                                {user_email}
                               </Typography>
                             </Stack>
                           </TableCell>
-                          <TableCell align="left">{company}</TableCell>
-                          <TableCell align="left">{role}</TableCell>
-                          <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
+                          <TableCell align="left">{lembaga_nama}</TableCell>
+                          <TableCell align="left">{role_nama}</TableCell>
+                          <TableCell align="left">{status}</TableCell>
                           <TableCell align="left">
-                            <Label
-                              variant="ghost"
-                              color={(status === 'banned' && 'error') || 'success'}
-                            >
-                              {sentenceCase(status)}
-                            </Label>
+                            <FontAwesomeIcon icon={faCalendarAlt} />
+                            &nbsp;
+                            {new Date(waktu).toLocaleDateString('en-US', longDateOption)}
+                            <br />
+                            Q: {isian} <br />
+                            A: {jawaban || <i>belum di respon</i>}
                           </TableCell>
 
                           <TableCell align="right">
@@ -203,13 +268,13 @@ const AduanList = () => {
                         </TableRow>
                       );
                     })}
-                  {emptyRows > 0 && (
+                  {/* {emptyRows > 0 && (
                     <TableRow style={{ height: 53 * emptyRows }}>
                       <TableCell colSpan={6} />
                     </TableRow>
-                  )}
+                  )} */}
                 </TableBody>
-                {isAduanNotFound && (
+                {aduanItems.length === 0 && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -225,7 +290,7 @@ const AduanList = () => {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={totalRow}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
