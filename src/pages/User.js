@@ -21,13 +21,13 @@ import {
   TablePagination
 } from '@mui/material';
 // components
+import UserAction from '../actions/user';
 import Page from '../components/Page';
 import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user/index';
 //
-import USERLIST from '../_mocks_/user';
 
 // ----------------------------------------------------------------------
 
@@ -72,12 +72,37 @@ function applySortFilter(array, comparator, query) {
 }
 
 const User = () => {
+  const [keyword, setKeyword] = useState('');
+  const [totalRow, setTotalRow] = useState(0);
+  const [userItems, setUserItems] = useState([]);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const fetchPelapor = (currKeyword = null, currPage = -1, currRowsPerPage = 0) => {
+    if (currKeyword == null) {
+      currKeyword = keyword;
+    }
+    if (currPage === -1) {
+      currPage = page;
+    }
+    if (currRowsPerPage === 0) {
+      currRowsPerPage = rowsPerPage;
+    }
+
+    UserAction.getAllPelapor(currKeyword, currPage, currRowsPerPage)
+      .then((result) => {
+        setUserItems(result.data.users);
+        setTotalRow(result.data.total);
+      })
+      .catch((_) => {
+        setUserItems([]);
+        setTotalRow(0);
+      });
+  };
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -87,7 +112,7 @@ const User = () => {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
+      const newSelecteds = userItems.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -125,9 +150,9 @@ const User = () => {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - userItems.length) : 0;
 
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+  const filteredUsers = applySortFilter(userItems, getComparator(order, orderBy), filterName);
 
   const isUserNotFound = filteredUsers.length === 0;
 
@@ -162,7 +187,7 @@ const User = () => {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
+                  rowCount={userItems.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
@@ -237,7 +262,7 @@ const User = () => {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={userItems.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

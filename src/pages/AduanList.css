@@ -1,0 +1,21 @@
+@keyframes loop-forever {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.aduan-category {
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  border-radius: 1000px;
+  animation: 2s loop-forever infinite;
+}
+.aduan-category.s {
+  background-color: #047232;
+}
+.aduan-category.k {
+  background-color: #b11342;
+}

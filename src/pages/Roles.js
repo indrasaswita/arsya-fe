@@ -1,7 +1,6 @@
 import { filter } from 'lodash';
 import { Icon } from '@iconify/react';
-import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import plusFill from '@iconify/icons-eva/plus-fill';
 import { Link as RouterLink } from 'react-router-dom';
 // material
@@ -9,7 +8,6 @@ import {
   Card,
   Table,
   Stack,
-  Avatar,
   Button,
   Checkbox,
   TableRow,
@@ -20,20 +18,22 @@ import {
   TableContainer,
   TablePagination
 } from '@mui/material';
+import { getAllRoles } from '../actions/role';
 // components
 import Page from '../components/Page';
-import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
 import { RoleListHead, RoleListToolbar, RoleMoreMenu } from '../components/_dashboard/role/index';
 //
-import ROLELIST from '../_mocks_/role';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
+  {
+    id: 'name',
+    label: 'Name',
+    alignRight: false
+  },
   { id: '' }
 ];
 
@@ -69,12 +69,43 @@ function applySortFilter(array, comparator, query) {
 }
 
 const Roles = () => {
-  const [page, setPage] = useState(0);
+  // component untuk Role page
+  const [roleList, setRoleList] = useState([]);
+  // const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  // const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  useEffect(() => {
+    // constructor (bakal dijalanin di awal component dibentuk)
+    fetchRoleList();
+  }, []);
+
+  const fetchRoleList = () => {
+    let roleTemp = [];
+    getAllRoles()
+      .then((response) => {
+        // if success
+        const roles = response.data?.roles || [];
+
+        roles.forEach((r) => {
+          roleTemp = [
+            ...roleTemp,
+            {
+              id: r.id,
+              name: r.nama
+            }
+          ];
+        });
+
+        setRoleList(roleTemp);
+      })
+      .catch((reason) => {
+        console.log('error', reason);
+      });
+  };
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -84,7 +115,7 @@ const Roles = () => {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = ROLELIST.map((n) => n.name);
+      const newSelecteds = roleList.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -109,24 +140,24 @@ const Roles = () => {
     setSelected(newSelected);
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+  // const handleChangePage = (event, newPage) => {
+  //   setPage(newPage);
+  // };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+  // const handleChangeRowsPerPage = (event) => {
+  //   setRowsPerPage(parseInt(event.target.value, 10));
+  //   setPage(0);
+  // };
 
   const handleFilterByName = (event) => {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - ROLELIST.length) : 0;
+  // const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - roleList.length) : 0;
 
-  const filteredRoles = applySortFilter(ROLELIST, getComparator(order, orderBy), filterName);
+  // const filteredRoles = applySortFilter(roleList, getComparator(order, orderBy), filterName);
 
-  const isRoleNotFound = filteredRoles.length === 0;
+  // const isRoleNotFound = filteredRoles.length === 0;
 
   return (
     <Page title="Role | Minimal-UI">
@@ -159,16 +190,16 @@ const Roles = () => {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={ROLELIST.length}
+                  rowCount={roleList.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredRoles
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  {roleList
+                    // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { id, name, status, avatarUrl } = row;
+                      const { id, name } = row;
                       const isItemSelected = selected.indexOf(name) !== -1;
 
                       return (
@@ -186,36 +217,15 @@ const Roles = () => {
                               onChange={(event) => handleClick(event, name)}
                             />
                           </TableCell>
-                          <TableCell component="th" scope="row" padding="none">
-                            <Stack direction="row" alignItems="center" spacing={2}>
-                              <Avatar alt={name} src={avatarUrl} />
-                              <Typography variant="subtitle2" noWrap>
-                                {name}
-                              </Typography>
-                            </Stack>
-                          </TableCell>
-                          <TableCell align="left">
-                            <Label
-                              variant="ghost"
-                              color={(status === 'banned' && 'error') || 'success'}
-                            >
-                              {sentenceCase(status)}
-                            </Label>
-                          </TableCell>
-
+                          <TableCell align="left">{name}</TableCell>
                           <TableCell align="right">
                             <RoleMoreMenu />
                           </TableCell>
                         </TableRow>
                       );
                     })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
                 </TableBody>
-                {isRoleNotFound && (
+                {roleList.length === 0 && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -228,15 +238,15 @@ const Roles = () => {
             </TableContainer>
           </Scrollbar>
 
-          <TablePagination
+          {/* <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={ROLELIST.length}
+            count={roleList.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
-          />
+          /> */}
         </Card>
       </Container>
     </Page>
