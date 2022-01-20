@@ -9,6 +9,7 @@ import DashboardApp from './pages/DashboardApp';
 import Products from './pages/Products';
 import Blog from './pages/Blog';
 import User from './pages/User';
+import Lembaga from './pages/Lembaga';
 import NotFound from './pages/Page404';
 import Dashboard from './pages/Dashboard';
 import Main from './pages/Main';
@@ -31,6 +32,7 @@ export default function Router() {
         { path: 'aduan/list', element: <AduanList /> },
         { path: 'aduan/create', element: <AduanCreate /> },
         { path: 'pelapor', element: <User /> },
+        { path: 'lembaga', element: <Lembaga /> },
         { path: 'roles', element: <Roles /> },
         { path: '404', element: <NotFound /> },
         { path: '*', element: <Navigate to="/404" /> },

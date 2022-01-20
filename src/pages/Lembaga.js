@@ -18,7 +18,7 @@ import {
   TablePagination
 } from '@mui/material';
 // components
-import { getAllPelapor } from '../actions/user';
+import { getAllLembaga } from '../actions/user';
 import Page from '../components/Page';
 import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
@@ -28,12 +28,14 @@ import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dash
 
 const TABLE_HEAD = [
   { id: 'email', label: 'Email', alignRight: false },
+  { id: 'lembaga', label: 'Nama Lembaga', alignRight: false },
+  { id: 'role', label: 'Nama Role', alignRight: false },
   { id: 'status', label: 'Status', alignRight: false },
   { id: 'verifikasi', label: 'Verifikasi', alignRight: false },
   { id: '' }
 ];
 
-const User = () => {
+const Lembaga = () => {
   const [totalRow, setTotalRow] = useState(0);
   const [userItems, setUserItems] = useState([]);
   const [page, setPage] = useState(0);
@@ -43,8 +45,8 @@ const User = () => {
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const fetchPelapor = () => {
-    getAllPelapor(filterName, page, totalRow)
+  const fetchLembaga = () => {
+    getAllLembaga(filterName, page + 1, rowsPerPage, orderBy, order)
       .then((result) => {
         setUserItems(result.data.users);
         setTotalRow(result.data.total);
@@ -56,8 +58,8 @@ const User = () => {
   };
 
   useEffect(() => {
-    fetchPelapor();
-  }, [filterName, page, totalRow]);
+    fetchLembaga();
+  }, [filterName, page, rowsPerPage, orderBy, order]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -110,7 +112,7 @@ const User = () => {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Pelapor
+            Lembaga
           </Typography>
           <Button
             variant="contained"
@@ -118,7 +120,7 @@ const User = () => {
             to="#"
             startIcon={<Icon icon={plusFill} />}
           >
-            Tambah Pelapor
+            Tambah Lembaga
           </Button>
         </Stack>
 
@@ -143,7 +145,16 @@ const User = () => {
                 />
                 <TableBody>
                   {userItems.map((row) => {
-                    const { id, email, status, verifikasi } = row;
+                    const {
+                      id,
+                      email,
+                      status,
+                      verifikasi,
+                      lembaga_id: lembagaId,
+                      lembaga,
+                      role_id: roleId,
+                      role
+                    } = row;
                     const isItemSelected = selected.indexOf(email) !== -1;
 
                     return (
@@ -162,6 +173,12 @@ const User = () => {
                           />
                         </TableCell>
                         <TableCell align="left">{email}</TableCell>
+                        <TableCell align="left">
+                          <a href={`/lembaga/${lembagaId}`}>{lembaga}</a>
+                        </TableCell>
+                        <TableCell align="left">
+                          <a href={`/roles/${roleId}`}>{role}</a>
+                        </TableCell>
                         <TableCell align="left">{status}</TableCell>
                         <TableCell align="left">{verifikasi ? 'Yes' : 'No'}</TableCell>
 
@@ -188,7 +205,7 @@ const User = () => {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={userItems.length}
+            count={totalRow}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -200,4 +217,4 @@ const User = () => {
   );
 };
 
-export default User;
+export default Lembaga;
